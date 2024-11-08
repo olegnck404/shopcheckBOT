@@ -1,4 +1,6 @@
-```markdown
+
+
+```
 # Aiogram Product Management Bot
 
 This is a Telegram bot built using the Aiogram framework that allows users to manage products through a simple and interactive interface. Users can search for products by SKU, view all available products, and administrators can add, edit, or delete products.
@@ -67,7 +69,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### requirements.txt
 
-```plaintext
+```
 aiogram==3.14.0
 ```
-
