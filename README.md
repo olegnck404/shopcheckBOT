@@ -1,4 +1,3 @@
-Here’s a well-structured `README.md` file for your GitHub repository, along with a `requirements.txt` file listing the dependencies for your Aiogram bot project.
 
 ### README.md
 
