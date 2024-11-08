@@ -7,7 +7,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from config import Settings
 from handlers import products, admin, start
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger("bot")
 

@@ -1,11 +1,8 @@
 from aiogram import types, Router, F
 from database import get_product_by_sku
+from keyboards.keyboards import create_products_keyboard
 
 router = Router(name=__name__)
-
-
-def create_products_keyboard():
-    pass
 
 
 @router.message(F.text == "📋 Все товары")
@@ -13,9 +10,11 @@ async def show_all_products(message: types.Message):
     keyboard = create_products_keyboard()
     await message.answer("Список товаров:", reply_markup=keyboard)
 
-@router.message(F.text=="🔍 Поиск по артикулу")
+
+@router.message(F.text == "🔍 Поиск по артикулу")
 async def search_product(message: types.Message):
     await message.answer("Введите артикул товара:")
+
 
 @router.message()
 async def search_by_sku(message: types.Message):
