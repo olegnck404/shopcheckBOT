@@ -1,6 +1,7 @@
-from aiogram import types, Dispatcher
-from aiogram.fsm.context import FSMContext  # Updated import for FSMContext in Aiogram 3.x
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram import types, Router
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.filters import Text  # Import Text filter for text matching
 
 class AdminStates(StatesGroup):
     ENTER_PASSWORD = State()  
@@ -12,11 +13,16 @@ class AdminStates(StatesGroup):
 ADMIN_PASSWORD = "158x12llo"
 
 async def admin_login(message: types.Message):
-    password = message.text.split("://")[1]
-    
-    if password == ADMIN_PASSWORD:
-        await message.answer("Добро пожаловать в админ-панель! Выберите действие:")
-        await AdminStates.CHOOSE_ACTION.set()
-        
-def register_admin_handlers(dp: Dispatcher):
-    dp.register_message_handler(admin_login, lambda message: message.text.startswith("admin://"))
+    if message.text.startswith("admin://"):
+        password = message.text.split("://")[1]
+        if password == ADMIN_PASSWORD:
+            await message.answer("Добро пожаловать в админ-панель! Выберите действие:")
+            await AdminStates.CHOOSE_ACTION.set()
+        else:
+            await message.answer("Неверный пароль.")
+    else:
+        await message.answer("Используйте формат: admin://ваш_пароль")
+
+def register_admin_handlers(router: Router):
+    # Register the admin login handler with the router
+    router.message.register(admin_login, Text(startswith="admin://"))
