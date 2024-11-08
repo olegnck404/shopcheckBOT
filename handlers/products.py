@@ -1,16 +1,23 @@
-from aiogram import types, Router
-from aiogram.filters import Text  # Import Text filter for text matching
+from aiogram import types, Router, F
 from database import get_product_by_sku
 
-router = Router()
+router = Router(name=__name__)
 
+
+def create_products_keyboard():
+    pass
+
+
+@router.message(F.text == "📋 Все товары")
 async def show_all_products(message: types.Message):
     keyboard = create_products_keyboard()
     await message.answer("Список товаров:", reply_markup=keyboard)
 
+@router.message(F.text=="🔍 Поиск по артикулу")
 async def search_product(message: types.Message):
     await message.answer("Введите артикул товара:")
 
+@router.message()
 async def search_by_sku(message: types.Message):
     sku = message.text.strip()
     product = get_product_by_sku(sku)
@@ -24,13 +31,3 @@ async def search_by_sku(message: types.Message):
             await message.answer(caption)
     else:
         await message.answer("❌ Товар с таким артикулом не найден.")
-
-def create_products_keyboard():
-    # Create your keyboard here
-    pass
-
-def register_product_handlers(router: Router):
-    # Register handlers with the router using Text filter correctly
-    router.message.register(show_all_products, Text(text="📋 Все товары"))  # Use text argument for exact match
-    router.message.register(search_product, Text(text="🔍 Поиск по артикулу"))
-    router.message.register(search_by_sku)  # This will match any text input
