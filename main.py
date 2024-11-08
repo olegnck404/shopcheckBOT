@@ -1,29 +1,38 @@
+import asyncio
 import logging
+
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.middlewares.logging import LoggingMiddleware
-from aiogram.utils import executor
-from config import API_TOKEN
-from handlers import start_command, show_all_products, search_product, admin_login, add_product_name, add_product, search_by_sku
-from db import create_products_table
+from aiogram.fsm.storage.memory import MemoryStorage
 
-# Настройка логирования
-logging.basicConfig(level=logging.INFO)
+from config import Settings
+from handlers import products, start  # Удалили admin из импорта
 
-# Инициализация бота и диспетчера
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
-dp.middleware.setup(LoggingMiddleware())
+logging.basicConfig(level=logging.DEBUG)
 
-# Создание таблицы в базе данных
-create_products_table()
+logger = logging.getLogger("bot")
 
-# Регистрация обработчиков
-dp.register_message_handler(start_command, commands=['start'])
-dp.register_message_handler(show_all_products, lambda message: message.text == "📋 Все товары")
-dp.register_message_handler(search_product, lambda message: message.text == "🔍 Поиск по артикулу")
-dp.register_message_handler(search_by_sku, lambda message: message.text.isdigit())
-dp.register_message_handler(admin_login, lambda message: message.text.startswith("admin://"))
-dp.register_callback_query_handler(add_product, lambda c: c.data == "add_product")
+async def handle_startup(bot: Bot):
+    await bot.delete_webhook(drop_pending_updates=True)
+    logger.info("Bot started.")
+
+async def handle_shutdown(bot: Bot):
+    logger.info("Bot stopped.")
+
+async def main():
+    settings = Settings()
+    logger.debug(settings)
+
+    bot = Bot(token=settings.api_token.get_secret_value())
+    storage = MemoryStorage()
+    dp = Dispatcher(storage=storage)
+    dp['settings'] = settings
+    dp.startup.register(handle_startup)
+    dp.shutdown.register(handle_shutdown)
+
+    # Включаем роутеры
+    dp.include_routers(start.router, products.router)  # Удалили admin.router
+
+    await dp.start_polling(bot)
 
 if __name__ == '__main__':
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
