@@ -1,6 +1,5 @@
 from aiogram import types, Router, F
 from database import get_product_by_sku, get_db_connection
-from keyboards.keyboards import create_products_keyboard
 
 router = Router(name=__name__)
 
@@ -14,14 +13,15 @@ async def show_all_products(message: types.Message):
     conn.close()
 
     if products:
-        product_list = ""
+        product_list = "Список доступных артикулов:\n"  # Заголовок списка
         for product in products:
             _, photo, name, sku, quantity, price = product
-            product_list += f"ID: {product[0]}, Name: {name}, SKU: {sku}, Quantity: {quantity}, Price: {price}\n"
+            # Форматируем строку с артикулом и названием товара
+            product_list += f"🔹 {sku} - {name}\n"  # Используем эмодзи для маркировки
 
-        await message.answer(f"Список товаров:\n{product_list}")
+        await message.answer(product_list)  # Отправляем список товаров
     else:
-        await message.answer("Нет товаров в базе данных.")
+        await message.answer("❌ Нет товаров в базе данных.")
 
 @router.message(F.text == "🔍 Поиск по артикулу")
 async def search_product(message: types.Message):
@@ -34,7 +34,7 @@ async def search_by_sku(message: types.Message):
 
     if product:
         _, photo, name, sku, quantity, price = product
-        caption = f"{name}\nSKU: {sku}\nЦена: {price}\nКоличество: {quantity}"
+        caption = f"🛒 Товар: {name}\nSKU: {sku}\n💰 Цена: {price}₽\n📦 Количество: {quantity}"
         if photo:
             await message.answer_photo(photo=photo, caption=caption)
         else:
