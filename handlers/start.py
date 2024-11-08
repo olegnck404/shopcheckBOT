@@ -1,7 +1,8 @@
 from aiogram import types, Router
 from aiogram.filters import Command  # Import Command filter
 
-router = Router()
+router = Router(name=__name__)
+
 
 async def start_command(message: types.Message):
     await message.answer("Привет! Выберите действие:", reply_markup=create_main_keyboard())
