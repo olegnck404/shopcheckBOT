@@ -1,6 +1,8 @@
-from aiogram import types, Dispatcher
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram import types, Router
+from aiogram.filters import Text  # Import Text filter for text matching
 from database import get_product_by_sku
+
+router = Router()
 
 async def show_all_products(message: types.Message):
     keyboard = create_products_keyboard()
@@ -12,7 +14,7 @@ async def search_product(message: types.Message):
 async def search_by_sku(message: types.Message):
     sku = message.text.strip()
     product = get_product_by_sku(sku)
-    
+
     if product:
         _, photo, name, sku, quantity, price = product
         caption = f"{name}\nSKU: {sku}\nЦена: {price}\nКоличество: {quantity}"
@@ -23,7 +25,12 @@ async def search_by_sku(message: types.Message):
     else:
         await message.answer("❌ Товар с таким артикулом не найден.")
 
-def register_product_handlers(dp: Dispatcher):
-    dp.register_message_handler(show_all_products, lambda message: message.text == "📋 Все товары")
-    dp.register_message_handler(search_product, lambda message: message.text == "🔍 Поиск по артикулу")
-    dp.register_message_handler(search_by_sku)
+def create_products_keyboard():
+    # Create your keyboard here
+    pass
+
+def register_product_handlers(router: Router):
+    # Register handlers with the router using Text filter correctly
+    router.message.register(show_all_products, Text(text="📋 Все товары"))  # Use text argument for exact match
+    router.message.register(search_product, Text(text="🔍 Поиск по артикулу"))
+    router.message.register(search_by_sku)  # This will match any text input

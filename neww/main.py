@@ -1,8 +1,7 @@
 import logging
+import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram import Router
-from aiogram.utils import start_polling  # Corrected import for polling
 from config import API_TOKEN
 from handlers import register_handlers
 
@@ -20,5 +19,9 @@ register_handlers(dp)
 async def on_startup(dp: Dispatcher):
     logging.info("Bot is starting...")
 
+async def main():
+    # Start polling using the Dispatcher instance
+    await dp.start_polling(bot, on_startup=on_startup)
+
 if __name__ == '__main__':
-    start_polling(dp, on_startup=on_startup)  # Use start_polling directly
+    asyncio.run(main())
