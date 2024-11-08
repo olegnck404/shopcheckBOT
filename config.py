@@ -1,9 +1,13 @@
-import os
+from pydantic import SecretStr
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from dotenv import load_dotenv
 
-load_dotenv()
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env',
+        env_file_encoding='utf-8'
+    )
 
-API_TOKEN = os.environ['API_TOKEN']
-ADMIN_PASSWORD = os.environ['ADMIN_PASSWORD']
-DATABASE_NAME = os.environ['DATABASE_NAME']
+    api_token: SecretStr
+    admin_password: SecretStr
+    database_name: str
