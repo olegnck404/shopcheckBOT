@@ -17,13 +17,17 @@ router = Router(name=__name__)
 
 
 @router.message(F.text.startswith("admin://"))
-async def admin_login(message: types.Message, settings: Settings):
+async def admin_login(
+        message: types.Message,
+        state: FSMContext,
+        settings: Settings
+):
     if message.text.startswith("admin://"):
         password = message.text.split("://")[1]
         if password == settings.admin_password.get_secret_value():
             await message.answer(
                 "Добро пожаловать в админ-панель! Выберите действие:")
-            await AdminStates.CHOOSE_ACTION.set()
+            await state.set_state(AdminStates.CHOOSE_ACTION)
         else:
             await message.answer("Неверный пароль.")
     else:
